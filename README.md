@@ -1,66 +1,139 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sitemap
+[![npm](https://img.shields.io/npm/dt/@nuxtjs/sitemap.svg?style=flat-square)](https://www.npmjs.com/package/@nuxtjs/sitemap)
+[![npm (scoped with tag)](https://img.shields.io/npm/v/@nuxtjs/sitemap/latest.svg?style=flat-square)](https://www.npmjs.com/package/@nuxtjs/sitemap)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Automatically generate or serve dynamic [sitemap.xml](https://www.sitemaps.org/protocol.html) for Nuxt.js projects!
 
-## About Laravel
+Module based on the awesome [sitemap](https://github.com/ekalinin/sitemap.js) package ❤️
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Setup
+- Add `@nuxtjs/sitemap` dependency using yarn or npm to your project
+- Add `@nuxtjs/sitemap` module to `nuxt.config.js`
+```js
+  modules: [
+   '@nuxtjs/sitemap'
+  ]
+````
+- Add additional options to `sitemap` section of `nuxt.config.js` to override defaults
+```js
+  sitemap: {
+    path: '/sitemap.xml',
+    hostname: 'https://example.com',
+    cacheTime: 1000 * 60 * 15,
+    generate: false, // Enable me when using nuxt generate
+    exclude: [
+      '/secret',
+      '/admin/**'
+    ]
+    routes: [
+      '/page/1',
+      {
+        url: '/page/2',
+        changefreq: 'daily',
+        priority: 1,
+        lastmodISO: '2017-06-30T13:30:00.000Z'
+      }
+    ]
+  }
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Options
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### `exclude`
+The `exclude` parameter is an array of [glob patterns](https://github.com/isaacs/minimatch#features) to exclude static routes from the generated sitemap.
 
-## Learning Laravel
+### `routes`
+The `routes` parameter follows the same way than the `generate` [configuration](https://nuxtjs.org/api/configuration-generate).
+   
+See as well the [routes](#routes-1) examples below.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### `path`
+- Default: `/sitemap.xml`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Where serve/generate sitemap file
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### `hostname`
+- Default: 
+  - `hostname()` for generate mode
+  - Dynamically based on request url for middleware mode
 
-## Laravel Sponsors
+This values is **mondatory** for generation sitemap file, and you should explicitly provide it for generate mode.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### `generate`
+- Default: `false`
 
-### Premium Partners
+Generates static sitemap file during build/generate instead of serving using middleware.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### `cacheTime`
+- Default: `1000 * 60 * 15` (15 Minutes)
 
-## Contributing
+Defines how friequently should sitemap **routes** being updated.
+This option is only effective when `generate` is `false`.
+Pleae note that after each invalidation, `routes` will be evalouated again. (See [routes](#routes-1) section)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Routes
 
-## Code of Conduct
+Dynamic routes are ignored by the sitemap module.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Example:
 
-## Security Vulnerabilities
+```
+-| pages/
+---| index.vue
+---| users/
+-----| _id.vue
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+If you want the module to add routes with dynamic params, you need to set an array of dynamic routes.
 
-## License
+We add routes for `/users/:id` in `nuxt.config.js`:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```js
+  sitemap: {
+    routes: [
+      '/users/1',
+      '/users/2',
+      '/users/3'
+    ]
+  }
+```
+
+### Function which returns a Promise
+
+`nuxt.config.js`
+```js
+const axios = require('axios')
+
+module.exports = {
+  sitemap: {
+    routes () {
+      return axios.get('https://jsonplaceholder.typicode.com/users')
+      .then(res => res.data.map(user =>  '/users/' + user.username))
+    }
+  }
+}
+```
+
+### Function with a callback
+
+`nuxt.config.js`
+```js
+const axios = require('axios')
+
+module.exports = {
+  sitemap: {
+    routes (callback) {
+      axios.get('https://jsonplaceholder.typicode.com/users')
+      .then(res => {
+        let routes = res.data.map(user => '/users/' + user.username)
+        callback(null, routes)
+      })
+      .catch(callback)
+    }
+  }
+}
+```
+
+### Contributors
+- [Nicolas PENNEC](https://github.com/NicoPennec)
+- [Pooya Parsa](https://github.com/pi0)
