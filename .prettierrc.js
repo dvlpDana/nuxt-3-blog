@@ -1,0 +1,16 @@
+module.exports = {
+  singleQuote: true,
+  semi: true,
+  useTabs: false,
+  tabWidth: 2,
+  trailingComma: 'es5',
+  printWidth: 120,
+  bracketSameLine: true,
+  jsxBracketSameLine: true,
+  vueIndentScriptAndStyle: false,
+  arrowParens: 'avoid',
+  quoteProps: 'as-needed',
+  htmlWhitespaceSensitivity: 'css',
+  tailwindConfig: './tailwind.config.js',
+  plugins: [require('prettier-plugin-tailwindcss')],
+};
